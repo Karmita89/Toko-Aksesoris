@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
+export const dynamic = 'force-dynamic'
+
 export default function RegisterPage() {
   const { data: session } = useSession()
   const router = useRouter()

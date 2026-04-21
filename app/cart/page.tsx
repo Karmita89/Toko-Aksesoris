@@ -12,6 +12,8 @@ import {
   updateCartQuantity
 } from '@/lib/cart'
 
+export const dynamic = 'force-dynamic'
+
 const formatCurrency = (value: number) =>
   `Rp ${value.toLocaleString('id-ID')}`
 

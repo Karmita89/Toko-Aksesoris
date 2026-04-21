@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { addProductToCart, getCart, getCartCount, Product } from '@/lib/cart'
 
+export const dynamic = 'force-dynamic'
+
 const formatCurrency = (value: number) =>
   `Rp ${value.toLocaleString('id-ID')}`
 
