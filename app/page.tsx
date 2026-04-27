@@ -10,7 +10,7 @@ export default function Home() {
             <Link href="/" className="hover:text-blue-600 font-bold">Home</Link>
             <Link href="/products" className="hover:text-blue-600">Produk</Link>
             <Link href="/cart" className="hover:text-blue-600">Cart</Link>
-            <Link href="/about" className="hover:text-blue-600">Tentang</Link>
+            <Link href="/admin" className="hover:text-blue-600">Admin</Link>
             <Link href="/auth/signin" className="hover:text-blue-600">Login</Link>
           </div>
         </div>

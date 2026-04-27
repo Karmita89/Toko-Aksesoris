@@ -1,52 +1,117 @@
-# AksChim - E-Commerce Website untuk Aksesoris
+# AksChim - Simplified E-Commerce Website
 
-Website e-commerce profesional untuk penjualan aksesoris dengan fitur lengkap, autentikasi user, admin dashboard untuk SCM dan manufactory management.
+A clean and simple e-commerce website for selling accessories, built with Next.js 14. This project demonstrates core e-commerce functionality with user authentication, product catalog, cart, checkout simulation, and admin dashboard for inventory and supplier management.
 
-## 🎯 Fitur Utama
+## 🎯 Core Features
 
-1. **Registrasi & Login** - Sistem autentikasi dengan NextAuth.js
-2. **Katalog Produk** - Menampilkan koleksi aksesoris dengan detail lengkap
-3. **Keranjang Belanja** - Sistem shopping cart untuk memudahkan transaksi
-4. **Checkout & Pembayaran** - Integrasi Stripe untuk pembayaran online
-5. **Admin Dashboard** - Mengelola inventory, suppliers, orders, dan reports
-6. **Supply Chain Management (SCM)** - Kelola supplier dan inventory
-7. **Manufactory Management** - Tracking produksi dan supplier
-8. **Halaman Info/About** - Informasi tentang perusahaan dan produk
-9. **Real-time Scalability** - Dirancang untuk menangani high traffic dengan load balancing
-10. **Responsive Design** - Kompatibel dengan desktop, tablet, dan mobile
+1. **User Registration & Login** - Basic authentication with role-based access (user/admin)
+2. **Product Catalog** - Browse accessories with pagination
+3. **Shopping Cart** - Add/remove items, view cart
+4. **Checkout Simulation** - Place orders without real payment
+5. **Admin Dashboard** - CRUD operations for products, suppliers, inventory, orders
 
 ## 🛠️ Tech Stack
 
-### Frontend & Backend
-- **Next.js 14** - React framework dengan SSR/SSG
-- **TypeScript** - Type-safe code
-- **Tailwind CSS** - Styling
+- **Next.js 14** - Full-stack React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Simple styling
 - **NextAuth.js** - Authentication
+- **Prisma** - Database ORM
+- **PostgreSQL** - Database (via Docker)
+- **Docker Compose** - Development environment
 
-### Database
-- **PostgreSQL 15** - Database relational
-- **Prisma ORM** - Database management
-- **Navicat** - Visual database management
+## 🚀 Quick Start
 
-### DevOps & Deployment
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-
-## 📋 Prerequisites
-
-Sebelum memulai, pastikan Anda sudah install:
+### Prerequisites
 - Docker & Docker Compose
-- Node.js v20+
-- npm atau yarn
-- Navicat (optional, untuk UI database management)
+- Node.js 18+
+- npm
 
-## 🚀 Cara Setup
+### Setup Steps
 
-### 1. Clone atau Download Project
+1. **Start Database**
+   ```bash
+   docker-compose up -d
+   ```
 
-```bash
-cd "c:\Toko Aksesoris"
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Setup Database**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+4. **Seed Data**
+   ```bash
+   node seed.js
+   ```
+
+5. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Access the App**
+   - Website: http://localhost:3000
+   - Admin Login: admin@akschim.com / admin123
+
+## 📁 Project Structure
+
 ```
+app/
+├── api/                 # API routes
+├── admin/               # Admin pages
+├── auth/                # Authentication pages
+├── cart/                # Shopping cart
+├── products/            # Product catalog
+└── layout.tsx           # Root layout
+
+lib/
+├── prisma.ts            # Database client
+├── auth.ts              # Auth configuration
+└── cart.ts              # Cart utilities
+
+prisma/
+└── schema.prisma        # Database schema
+```
+
+## 🎓 Academic Notes
+
+This project is designed for educational purposes, demonstrating:
+
+- **Scalability**: Pagination for large datasets, efficient Prisma queries
+- **Security**: Password hashing, role-based access
+- **Performance**: SSR with Next.js, simple caching strategies
+- **Architecture**: Clean separation of concerns, API-first design
+
+For high-traffic scaling, consider:
+- CDN for static assets
+- Redis for session/caching
+- Load balancers
+- Database indexing and read replicas
+
+## 📝 API Endpoints
+
+- `GET/POST /api/products` - Product management
+- `GET/POST /api/suppliers` - Supplier management
+- `GET/POST /api/inventory` - Inventory tracking
+- `GET/PATCH /api/orders` - Order management
+- `POST /api/register` - User registration
+- `POST /api/auth/signin` - Authentication
+
+## 🔧 Development
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+
+## 📄 License
+
+This project is for educational use.
 
 ### 2. Jalankan PostgreSQL dengan Docker
 

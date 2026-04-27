@@ -1,14 +1,35 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'loading') return
+    if (!session || (session.user as any)?.role !== 'admin') {
+      router.push('/')
+    }
+  }, [session, status, router])
+
+  if (status === 'loading') {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  }
+
+  if (!session || (session.user as any)?.role !== 'admin') {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">AksChim Admin</h1>
-          <Link href="/" className="hover:text-blue-600">Logout</Link>
+          <Link href="/" className="hover:text-blue-600">Back to Site</Link>
         </div>
       </nav>
 
@@ -39,11 +60,6 @@ export default function AdminDashboard() {
           <Link href="/admin/users" className="bg-white rounded-lg shadow p-6 hover:shadow-lg">
             <h3 className="text-xl font-bold mb-2">👥 Users</h3>
             <p className="text-gray-600">Kelola pengguna sistem</p>
-          </Link>
-
-          <Link href="/admin/reports" className="bg-white rounded-lg shadow p-6 hover:shadow-lg">
-            <h3 className="text-xl font-bold mb-2">📊 Reports</h3>
-            <p className="text-gray-600">Laporan penjualan dan analytics</p>
           </Link>
         </div>
       </div>

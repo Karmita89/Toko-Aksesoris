@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { addProductToCart, getCart, getCartCount, Product } from '@/lib/cart'
 
+// For high traffic: This page uses client-side fetching for simplicity
+// In production, consider SSR with revalidate for better SEO and initial load
 export const dynamic = 'force-dynamic'
 
 const formatCurrency = (value: number) =>
@@ -17,24 +19,37 @@ export default function ProductsPage() {
   const [notification, setNotification] = useState('')
   const [animating, setAnimating] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
-    fetchProducts()
+    fetchProducts(1, true)
     setCartCount(getCartCount(getCart()))
   }, [])
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (pageNum: number, reset = false) => {
     try {
-      const response = await fetch('/api/products')
+      const response = await fetch(`/api/products?page=${pageNum}&limit=10`)
       if (response.ok) {
         const data = await response.json()
-        setProducts(data)
+        if (reset) {
+          setProducts(data.products)
+        } else {
+          setProducts(prev => [...prev, ...data.products])
+        }
+        setHasMore(data.pagination.page < data.pagination.pages)
       }
     } catch (error) {
       console.error('Failed to fetch products')
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadMore = () => {
+    const nextPage = page + 1
+    setPage(nextPage)
+    fetchProducts(nextPage)
   }
 
   const handleAddToCart = (product: Product) => {
@@ -116,6 +131,17 @@ export default function ProductsPage() {
             </div>
           ))}
         </div>
+
+        {hasMore && (
+          <div className="text-center mt-8">
+            <button
+              onClick={loadMore}
+              className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
