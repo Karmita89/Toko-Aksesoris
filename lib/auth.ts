@@ -1,8 +1,28 @@
 ﻿import { NextAuthOptions } from 'next-auth'
+import { DefaultSession } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+
+declare module 'next-auth' {
+  interface User {
+    role?: string
+  }
+  interface Session {
+    user: {
+      id?: string
+      role?: string
+    } & DefaultSession['user']
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id?: string
+    role?: string
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -26,7 +46,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role
-        }
+        } as any
       }
     })
   ],

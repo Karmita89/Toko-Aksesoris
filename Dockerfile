@@ -43,8 +43,8 @@ ENV PRISMA_CLI_BINARY_TARGETS="debian-openssl-1.1.x"
 # Expose port
 EXPOSE 3000
 
-# Use dumb-init to handle signals
+# Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start Next.js with migration
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+# Start Next.js with optional Prisma migration deploy
+CMD ["sh", "-c", "if [ -d prisma/migrations ] && [ -n \"$(ls -A prisma/migrations 2>/dev/null)\" ]; then npx prisma migrate deploy; fi && npm start"]

@@ -12,17 +12,35 @@ import {
   updateCartQuantity
 } from '@/lib/cart'
 
+export const dynamic = 'force-dynamic'
+
 const formatCurrency = (value: number) =>
   `Rp ${value.toLocaleString('id-ID')}`
 
 export default function CartPage() {
-  const { data: session, status } = useSession()
+  const session = useSession()
+  const status = session?.status
+  const sessionData = session?.data
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    setCartItems(getCart())
+    const updateCart = () => {
+      setCartItems(getCart())
+    }
+    
+    updateCart()
+    
+    // Listen for storage changes (when cart is updated from other tabs/windows)
+    window.addEventListener('storage', updateCart)
+    // Listen for custom cart update event
+    window.addEventListener('cartUpdated', updateCart)
+    
+    return () => {
+      window.removeEventListener('storage', updateCart)
+      window.removeEventListener('cartUpdated', updateCart)
+    }
   }, [])
 
   const total = useMemo(() => getCartTotal(cartItems), [cartItems])
@@ -56,7 +74,7 @@ export default function CartPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: (session.user as any).id,
+          userId: (sessionData?.user as any)?.id,
           items: cartItems.map(item => ({
             productId: item.id, // Assuming id matches database product id
             quantity: item.quantity,
@@ -72,7 +90,7 @@ export default function CartPage() {
 
       const order = await response.json()
       setCartItems(clearCart())
-      setMessage(`Terima kasih ${session?.user?.name ?? 'pelanggan'}! Pesanan Anda berhasil dibuat dengan ID: ${order.id}`)
+      setMessage(`Terima kasih ${sessionData?.user?.name ?? 'pelanggan'}! Pesanan Anda berhasil dibuat dengan ID: ${order.id}`)
     } catch (error) {
       setMessage('Gagal membuat pesanan. Coba lagi.')
     } finally {
@@ -89,7 +107,7 @@ export default function CartPage() {
             <Link href="/" className="hover:text-blue-600">Home</Link>
             <Link href="/products" className="hover:text-blue-600">Produk</Link>
             <Link href="/cart" className="hover:text-blue-600 font-bold">Cart</Link>
-            {session ? (
+            {sessionData ? (
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
                 className="text-blue-600 hover:text-blue-800"
@@ -111,7 +129,7 @@ export default function CartPage() {
           </div>
           <div className="rounded-lg bg-blue-50 border border-blue-100 p-4 text-blue-700">
             {status === 'authenticated'
-              ? `Terhubung sebagai ${session.user?.name ?? session.user?.email}`
+              ? `Terhubung sebagai ${sessionData?.user?.name ?? sessionData?.user?.email}`
               : 'Silakan login untuk memesan.'}
           </div>
         </div>
