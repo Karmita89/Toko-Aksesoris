@@ -13,6 +13,12 @@ services:
     environment:
       NODE_ENV: "production"
       PRISMA_CLI_BINARY_TARGETS: "debian-openssl-1.1.x"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.akschim.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.akschim.entrypoints=websecure"
+      - "traefik.http.routers.akschim.tls.certresolver=le"
+      - "traefik.http.services.akschim.loadbalancer.server.port=3000"
     networks:
       - akschim-network
     restart: unless-stopped
@@ -35,9 +41,35 @@ services:
       - akschim-network
     restart: unless-stopped
 
+  traefik:
+    image: traefik:latest
+    container_name: akschim-traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    env_file:
+      - .env.local
+    command:
+      - --providers.docker=true
+      - --providers.docker.network=akschim-network
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --api.dashboard=true
+      - --certificatesresolvers.le.acme.email=${TRAEFIK_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.tlschallenge=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/letsencrypt:/letsencrypt
+    networks:
+      - akschim-network
+
 networks:
   akschim-network:
     driver: bridge
 
 volumes:
   minio-storage:
+  letsencrypt:
