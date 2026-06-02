@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signIn, useSession } from 'next-auth/react'
 
+export const dynamic = 'force-dynamic'
+
 export default function SignInPage() {
-  const { data: session } = useSession()
+  const session = useSession()
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,7 +16,7 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (session) {
+    if (session?.data) {
       router.replace('/')
     }
   }, [session, router])

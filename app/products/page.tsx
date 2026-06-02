@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { addProductToCart, getCart, getCartCount, Product } from '@/lib/cart'
 
+export const dynamic = 'force-dynamic'
+
 const formatCurrency = (value: number) =>
   `Rp ${value.toLocaleString('id-ID')}`
 
 export default function ProductsPage() {
-  const { data: session } = useSession()
+  const session = useSession()
   const [products, setProducts] = useState<Product[]>([])
   const [cartCount, setCartCount] = useState(0)
   const [notification, setNotification] = useState('')
@@ -18,7 +20,19 @@ export default function ProductsPage() {
 
   useEffect(() => {
     fetchProducts()
-    setCartCount(getCartCount(getCart()))
+    
+    const updateCartCount = () => {
+      setCartCount(getCartCount(getCart()))
+    }
+    
+    updateCartCount()
+    
+    // Listen for cart updates
+    window.addEventListener('cartUpdated', updateCartCount)
+    
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount)
+    }
   }, [])
 
   const fetchProducts = async () => {
