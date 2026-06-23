@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   nextjs:
     build:
@@ -16,12 +14,14 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.akschim.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.akschim.entrypoints=websecure"
-      - "traefik.http.routers.akschim.tls.certresolver=le"
+      - "traefik.http.routers.akschim.entrypoints=web"
+      - "traefik.http.routers.akschim.service=akschim"
       - "traefik.http.services.akschim.loadbalancer.server.port=3000"
     networks:
       - akschim-network
     restart: unless-stopped
+    depends_on:
+      - traefik
 
   minio:
     image: minio/minio:latest
@@ -47,24 +47,26 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
       - "8080:8080"
-    env_file:
-      - .env.local
     command:
       - --providers.docker=true
       - --providers.docker.network=akschim-network
+      - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
+      - --api=true
       - --api.dashboard=true
-      - --certificatesresolvers.le.acme.email=${TRAEFIK_EMAIL}
-      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --api.insecure=true
+      - --log.level=INFO
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/letsencrypt:/letsencrypt
+      - ./traefik:/traefik
     networks:
       - akschim-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`) || Path(`/dashboard`) || Path(`/api`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=web"
 
 networks:
   akschim-network:
@@ -72,4 +74,3 @@ networks:
 
 volumes:
   minio-storage:
-  letsencrypt:
