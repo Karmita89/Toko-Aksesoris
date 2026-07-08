@@ -92,7 +92,8 @@ export async function POST(request: Request) {
       data: {
         email: email.toLowerCase(),
         password: hashedPassword,
-        name: name.trim()
+        name: name.trim(),
+        role: 'USER'
       }
     })
 

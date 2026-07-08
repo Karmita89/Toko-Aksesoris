@@ -12,8 +12,8 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
-  password  String
-  role      String   @default("user")
+  password  String?
+  role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
@@ -71,4 +71,10 @@ model Supplier {
   name      String
   contact   String
   products  Product[]
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  USER
 }

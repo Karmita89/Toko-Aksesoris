@@ -1,6 +1,12 @@
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions)
+  const role = session?.user?.role
+  const isAdmin = role === 'SUPERADMIN' || role === 'ADMIN'
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <nav className="bg-white shadow">
@@ -11,6 +17,7 @@ export default function Home() {
             <Link href="/products" className="hover:text-blue-600">Produk</Link>
             <Link href="/cart" className="hover:text-blue-600">Cart</Link>
             <Link href="/about" className="hover:text-blue-600">Tentang</Link>
+            {isAdmin && <Link href="/admin" className="hover:text-blue-600">Admin</Link>}
             <Link href="/auth/signin" className="hover:text-blue-600">Login</Link>
           </div>
         </div>
@@ -68,8 +75,8 @@ export default function Home() {
         <section className="bg-blue-600 text-white rounded-lg p-8 text-center">
           <h3 className="text-3xl font-bold mb-4">Dapatkan Penawaran Spesial</h3>
           <p className="mb-6">Daftar sekarang dan dapatkan diskon 20% untuk pembelian pertama Anda</p>
-          <Link href="/auth/register" className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100">
-            Daftar Sekarang
+          <Link href="/auth/signin" className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100">
+            Login dengan Google
           </Link>
         </section>
       </main>

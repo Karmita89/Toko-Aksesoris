@@ -84,13 +84,16 @@ export default function ProductsPage() {
                 </span>
               )}
             </Link>
-            {session ? (
-              <button
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                Logout
-              </button>
+            {session.status === 'authenticated' ? (
+              <>
+                <span className="text-sm text-gray-500">Role: {(session.data?.user as any)?.role ?? 'USER'}</span>
+                <button
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Logout
+                </button>
+              </>
             ) : (
               <Link href="/auth/signin" className="hover:text-blue-600">Login</Link>
             )}

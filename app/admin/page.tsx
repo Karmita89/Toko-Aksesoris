@@ -1,13 +1,24 @@
-'use client'
-
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const session = await getServerSession(authOptions)
+  const role = session?.user?.role
+
+  if (!session || (role !== 'SUPERADMIN' && role !== 'ADMIN')) {
+    redirect('/')
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">AksChim Admin</h1>
+          <div>
+            <h1 className="text-2xl font-bold">AksChim Admin</h1>
+            <p className="text-sm text-gray-600">Role: {role}</p>
+          </div>
           <Link href="/" className="hover:text-blue-600">Logout</Link>
         </div>
       </nav>

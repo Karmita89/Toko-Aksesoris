@@ -168,8 +168,28 @@ docker-compose up -d
 
 ### Port 3000 sudah digunakan?
 ```bash
-PORT=3001 npm run dev
+PORT=3000 npm run dev
 ```
+
+### Google OAuth (NextAuth) - Redirect URI mismatch
+
+Jika login Google menampilkan error "redirect_uri_mismatch" lakukan langkah berikut:
+
+1. Buka Google Cloud Console → APIs & Services → Credentials.
+2. Pilih OAuth 2.0 Client ID yang digunakan (cocokkan dengan `GOOGLE_CLIENT_ID` di file `.env.local`).
+3. Pada bagian **Authorized redirect URIs** tambahkan:
+
+- `http://localhost:3000/api/auth/callback/google`
+- `http://127.0.0.1:3000/api/auth/callback/google`
+
+4. Jika aplikasi dijalankan di domain publik (mis. `https://example.com`), tambahkan juga:
+
+- `https://example.com/api/auth/callback/google`
+
+5. Pastikan **Authorized JavaScript origins** berisi `http://localhost:3000` (atau domain Anda).
+6. Simpan perubahan, restart dev server, lalu coba login kembali.
+
+Catatan: Pastikan `NEXTAUTH_URL` di `.env.local` sesuai dengan origin yang Anda daftarkan (mis. `http://localhost:3000` atau `https://example.com`).
 
 ## 📧 Support
 
